@@ -15,15 +15,10 @@ public class TileGenerator : MonoBehaviour
     private Transform targetTile;
     private Rect screenRect;
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position + tileBounds.center, tileBounds.size);
-    }
-
     private void Start()
     {
         screenRect = Camera.main.pixelRect;
-        DetermineTileBounds();
+        tileBounds = BoundsDeterminator.Determine(tilePrefab);
         InitTiles();
     }
 
@@ -36,8 +31,8 @@ public class TileGenerator : MonoBehaviour
 
     private void UpdateMotion()
     {
-        Vector3 direction = Vector3.back;
-        Vector3 velocity = tileSpeed * direction * Time.deltaTime;
+        Vector3 movementDirection = Vector3.back;
+        Vector3 velocity = tileSpeed * movementDirection * Time.deltaTime;
 
         foreach (var tile in tiles)
         {
@@ -47,7 +42,8 @@ public class TileGenerator : MonoBehaviour
 
     private void UpdateCreation()
     {
-        if (tileBounds.Contains(targetTile.position)) return;
+        bool isTileAhead = Vector3.Dot(Vector3.back, targetTile.position) < 0f;
+        if (isTileAhead || tileBounds.Contains(targetTile.position)) return;
 
         SpawnTile();
 
@@ -84,25 +80,10 @@ public class TileGenerator : MonoBehaviour
         if (tiles.Count != 0)
         {
             Vector3 lastTilePosition = tiles[tiles.Count - 1].position;
-            newTilePosition = lastTilePosition + tileBounds.size.z * Vector3.forward;
+            newTilePosition = lastTilePosition + (tileBounds.size.z + offsetBetweenTiles) * Vector3.forward;
         }
 
         Transform newTile = Instantiate(tilePrefab, newTilePosition, Quaternion.identity, transform);
         tiles.Add(newTile);
-    }
-
-    private void DetermineTileBounds()
-    {
-        MeshFilter[] meshes = tilePrefab.GetComponentsInChildren<MeshFilter>();
-        foreach (MeshFilter mesh in meshes)
-        {
-            Bounds meshBounds = mesh.sharedMesh.bounds;
-            Transform meshTransform = mesh.transform;
-
-            meshBounds.size = Vector3.Scale(meshBounds.size, meshTransform.localScale) + Vector3.forward * offsetBetweenTiles;
-            meshBounds.center += meshTransform.localPosition;
-
-            tileBounds.Encapsulate(meshBounds);
-        }
     }
 }
