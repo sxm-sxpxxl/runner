@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2029287400042126409, guid: 72f731ac1df189e19901c70e4c8243bf, type: 3}
+  obstaclePrefab: {fileID: 8301644094225062386, guid: 561c2c905e4cfcb40ad07ec0d8dc1f5d, type: 3}
   tileSpeed: 5
 --- !u!1 &705507993
 GameObject:

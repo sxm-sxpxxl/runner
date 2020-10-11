@@ -5,6 +5,7 @@ using UnityEngine;
 public class TileGenerator : MonoBehaviour
 {
     [SerializeField] private Transform tilePrefab = default;
+    [SerializeField] private Transform obstaclePrefab = default;
     [SerializeField, Range(1f, 10f)] float tileSpeed = 5f;
 
     private readonly int countInitTiles = 3;
@@ -84,6 +85,30 @@ public class TileGenerator : MonoBehaviour
         }
 
         Transform newTile = Instantiate(tilePrefab, newTilePosition, Quaternion.identity, transform);
+        SpawnObstacles(newTile);
+
         tiles.Add(newTile);
+    }
+
+    private void SpawnObstacles(Transform tile)
+    {
+        int countObstacles = tile.childCount - 1;
+        Vector3 initPosition = tile.position + new Vector3(0f, 0.5f * obstaclePrefab.localScale.y, 0.5f * tileBounds.extents.z);
+
+        var availablePositions = new List<float>(tile.childCount);
+        for (int i = 0; i < tile.childCount; i++)
+        {
+            availablePositions.Add(tile.GetChild(i).position.x);
+        }
+
+        for (int i = 0; i < countObstacles; i++)
+        {
+            int index = Random.Range(0, availablePositions.Count);
+            float randomPosition = availablePositions[index];
+            availablePositions.RemoveAt(index);
+
+            Vector3 actualPosition = initPosition + Vector3.right * randomPosition;
+            Transform obstacle = Instantiate(obstaclePrefab, actualPosition, Quaternion.identity, tile);
+        }
     }
 }
