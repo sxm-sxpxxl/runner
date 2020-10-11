@@ -7,6 +7,7 @@ public class PlayerMotionController : MonoBehaviour
 
     private Bounds tileBounds;
 
+    private Vector3 inputDirection;
     private Vector3 lastPosition, nextPosition;
     private bool isMovement;
     private float lerpWeight, rate;
@@ -16,6 +17,7 @@ public class PlayerMotionController : MonoBehaviour
         lastPosition = nextPosition = transform.position;
         rate = 1f / durationMovement;
         tileBounds = BoundsDeterminator.Determine(tilePrefab);
+        GetComponent<SwipeDetector>().OnSwipe += OnSwipe;
     }
 
     private void Update()
@@ -24,14 +26,19 @@ public class PlayerMotionController : MonoBehaviour
         UpdateMotion();
     }
 
+    private void OnSwipe(SwipeDirection direction)
+    {
+        if (direction == SwipeDirection.Left || direction == SwipeDirection.Right)
+        {
+            int sign = direction == SwipeDirection.Right ? 1 : -1;
+            inputDirection = Vector3.right * sign;
+        }
+    }
+
     private void HandleInput()
     {
-        float input = Input.GetAxisRaw("Horizontal");
-        bool isInputExist = !Mathf.Approximately(input, 0f);
+        if (inputDirection.sqrMagnitude < 0.01f) return;
 
-        if (!isInputExist) return;
-
-        Vector3 inputDirection = Vector3.right * input;
         if (isMovement)
         {
             bool isDirectionNotChanged = Vector3.Dot(inputDirection, nextPosition - lastPosition) > 0f;
@@ -51,6 +58,8 @@ public class PlayerMotionController : MonoBehaviour
             nextPosition = newPosition;
             isMovement = true;
         }
+
+        inputDirection = Vector3.zero;
     }
 
     private void UpdateMotion()
