@@ -870,6 +870,7 @@ GameObject:
   m_Component:
   - component: {fileID: 639902556}
   - component: {fileID: 639902557}
+  - component: {fileID: 639902558}
   m_Layer: 0
   m_Name: Tile Generator
   m_TagString: Untagged
@@ -905,7 +906,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2029287400042126409, guid: 72f731ac1df189e19901c70e4c8243bf, type: 3}
   obstaclePrefab: {fileID: 8301644094225062386, guid: 561c2c905e4cfcb40ad07ec0d8dc1f5d, type: 3}
-  tileSpeed: 10
+--- !u!114 &639902558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 639902555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d3b395e329e64b43ac441f2fc84f37e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2050,7 +2063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be3424706a7797d4287680eff3e2bd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileGenerator: {fileID: 639902557}
+  tileMotionController: {fileID: 639902558}
   playerHealth: {fileID: 1973122578}
 --- !u!1 &2062116243
 GameObject:

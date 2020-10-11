@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DistanceDeterminator : MonoBehaviour
 {
-    [SerializeField] private TileGenerator tileGenerator = default;
+    [SerializeField] private TileMotionController tileMotionController = default;
     [SerializeField] private PlayerHealth playerHealth = default;
 
     public event Action<string> OnCurrentDistanceChanged = delegate { };
@@ -14,51 +14,38 @@ public class DistanceDeterminator : MonoBehaviour
 
     private float currentTraveledDistance, highTraveledDistance;
 
-    private float CurrentTraveledDistance
-    {
-        get => currentTraveledDistance;
-        set
-        {
-            currentTraveledDistance = value;
-            OnCurrentDistanceChanged?.Invoke(FormatDistance(currentTraveledDistance));
-        }
-    }
-
-    private float HighTraveledDistance
-    {
-        get => highTraveledDistance;
-        set
-        {
-            highTraveledDistance = value;
-            OnHighDistanceChanged?.Invoke(FormatDistance(highTraveledDistance));
-            PlayerPrefs.SetFloat(highTraveledDistanceKey, highTraveledDistance);
-        }
-    }
-
     private void Awake()
     {
-        if (tileGenerator != null) tileGenerator.OnDistanceTranslate += OnDistanceTranslate;
+        if (tileMotionController != null) tileMotionController.OnDistanceAdd += OnDistanceAdd;
         if (playerHealth != null) playerHealth.OnDie += OnPlayerDie;
     }
 
     private void Start()
     {
-        HighTraveledDistance = PlayerPrefs.GetFloat(highTraveledDistanceKey, 0f);
+        UpdateHighTraveledDistance(PlayerPrefs.GetFloat(highTraveledDistanceKey, 0f));
     }
 
-    private void OnDistanceTranslate(float distance)
+    private void OnDistanceAdd(float distance)
     {
-        CurrentTraveledDistance += distance;
+        currentTraveledDistance += distance;
+        OnCurrentDistanceChanged?.Invoke(FormatDistance(currentTraveledDistance));
 
-        if (CurrentTraveledDistance > HighTraveledDistance)
+        if (currentTraveledDistance > highTraveledDistance)
         {
-            HighTraveledDistance = CurrentTraveledDistance;
+            UpdateHighTraveledDistance(currentTraveledDistance);
         }
     }
 
     private void OnPlayerDie()
     {
-        HighTraveledDistance = highTraveledDistance;
+        UpdateHighTraveledDistance(highTraveledDistance);
+    }
+
+    private void UpdateHighTraveledDistance(float value)
+    {
+        highTraveledDistance = value;
+        OnHighDistanceChanged?.Invoke(FormatDistance(value));
+        PlayerPrefs.SetFloat(highTraveledDistanceKey, value);
     }
 
     private string FormatDistance(float value) => $"{value:F} m";

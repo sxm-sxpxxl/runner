@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -9,18 +8,16 @@ public class TileGenerator : MonoBehaviour
 {
     [SerializeField] private Transform tilePrefab = default;
     [SerializeField] private Transform obstaclePrefab = default;
-    [SerializeField, Range(1f, 10f)] float tileSpeed = 5f;
-
-    public event Action<float> OnDistanceTranslate = delegate { };
 
     private readonly int countInitTiles = 3;
     private readonly float offsetBetweenTiles = 0.25f;
 
     private Rect screenRect;
     private Bounds tileBounds;
-    private List<Transform> tiles = new List<Transform>();
     private Transform targetTile;
     private List<Vector3> childPositions = new List<Vector3>();
+
+    public List<Transform> Tiles { get; private set; } = new List<Transform>();
 
     private void Start()
     {
@@ -37,23 +34,8 @@ public class TileGenerator : MonoBehaviour
 
     private void Update()
     {
-        UpdateMotion();
         UpdateCreation();
         UpdateDestruction();
-    }
-
-    private void UpdateMotion()
-    {
-        float dt = Time.deltaTime;
-        Vector3 movementDirection = Vector3.back;
-        Vector3 velocity = tileSpeed * movementDirection * dt;
-
-        foreach (var tile in tiles)
-        {
-            tile.position += velocity;
-        }
-
-        OnDistanceTranslate?.Invoke(tileSpeed * dt);
     }
 
     private void UpdateCreation()
@@ -63,21 +45,21 @@ public class TileGenerator : MonoBehaviour
 
         SpawnTile();
 
-        int targetIndex = tiles.IndexOf(targetTile);
-        int nextTargetIndex = Mathf.Clamp(targetIndex + 1, 0, tiles.Count);
-        targetTile = tiles[nextTargetIndex];
+        int targetIndex = Tiles.IndexOf(targetTile);
+        int nextTargetIndex = Mathf.Clamp(targetIndex + 1, 0, Tiles.Count);
+        targetTile = Tiles[nextTargetIndex];
     }
 
     private void UpdateDestruction()
     {
-        Transform firstTile = tiles[0];
+        Transform firstTile = Tiles[0];
         Vector3 borderPosition = firstTile.position + Vector3.forward * tileBounds.extents.z;
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(borderPosition);
 
         if (!screenRect.Contains(screenPosition))
         {
             Destroy(firstTile.gameObject);
-            tiles.RemoveAt(0);
+            Tiles.RemoveAt(0);
         }
     }
 
@@ -87,15 +69,15 @@ public class TileGenerator : MonoBehaviour
         {
             SpawnTile(false);
         }
-        targetTile = tiles[0];
+        targetTile = Tiles[0];
     }
 
     private void SpawnTile(bool withObstacles = true)
     {
         Vector3 newTilePosition = Vector3.zero;
-        if (tiles.Count != 0)
+        if (Tiles.Count != 0)
         {
-            Vector3 lastTilePosition = tiles[tiles.Count - 1].position;
+            Vector3 lastTilePosition = Tiles[Tiles.Count - 1].position;
             newTilePosition = lastTilePosition + (tileBounds.size.z + offsetBetweenTiles) * Vector3.forward;
         }
 
@@ -105,23 +87,22 @@ public class TileGenerator : MonoBehaviour
             SpawnObstacles(newTile);
         }
 
-        tiles.Add(newTile);
+        Tiles.Add(newTile);
     }
 
     private void SpawnObstacles(Transform tile)
     {
         int countObstacles = tile.childCount - 1;
         Vector3 initPosition = tile.position + new Vector3(0f, 0.5f * obstaclePrefab.localScale.y, 0.5f * tileBounds.extents.z);
-        var availablePositions = new List<Vector3>(childPositions);
+        var remainingPositions = new List<Vector3>(childPositions);
 
         for (int i = 0; i < countObstacles; i++)
         {
-            int index = Random.Range(0, availablePositions.Count);
-            Vector3 randomPosition = availablePositions[index];
-            availablePositions.RemoveAt(index);
+            int index = Random.Range(0, remainingPositions.Count);
+            Vector3 randomPosition = remainingPositions[index];
+            remainingPositions.RemoveAt(index);
 
-            Vector3 actualPosition = initPosition + randomPosition;
-            Transform obstacle = Instantiate(obstaclePrefab, actualPosition, Quaternion.identity, tile);
+            Instantiate(obstaclePrefab, initPosition + randomPosition, Quaternion.identity, tile);
         }
     }
 }
