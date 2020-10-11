@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
+
+using Random = UnityEngine.Random;
 
 public class TileGenerator : MonoBehaviour
 {
     [SerializeField] private Transform tilePrefab = default;
     [SerializeField] private Transform obstaclePrefab = default;
     [SerializeField, Range(1f, 10f)] float tileSpeed = 5f;
+
+    public event Action<float> OnDistanceTranslate = delegate { };
 
     private readonly int countInitTiles = 3;
     private readonly float offsetBetweenTiles = 0.25f;
@@ -39,13 +44,16 @@ public class TileGenerator : MonoBehaviour
 
     private void UpdateMotion()
     {
+        float dt = Time.deltaTime;
         Vector3 movementDirection = Vector3.back;
-        Vector3 velocity = tileSpeed * movementDirection * Time.deltaTime;
+        Vector3 velocity = tileSpeed * movementDirection * dt;
 
         foreach (var tile in tiles)
         {
             tile.position += velocity;
         }
+
+        OnDistanceTranslate?.Invoke(tileSpeed * dt);
     }
 
     private void UpdateCreation()
