@@ -11,15 +11,22 @@ public class TileGenerator : MonoBehaviour
     private readonly int countInitTiles = 3;
     private readonly float offsetBetweenTiles = 0.25f;
 
+    private Rect screenRect;
     private Bounds tileBounds;
     private List<Transform> tiles = new List<Transform>();
     private Transform targetTile;
-    private Rect screenRect;
+    private List<Vector3> childPositions = new List<Vector3>();
 
     private void Start()
     {
         screenRect = Camera.main.pixelRect;
         tileBounds = BoundsDeterminator.Determine(tilePrefab);
+
+        for (int i = 0; i < tilePrefab.childCount; i++)
+        {
+            childPositions.Add(tilePrefab.GetChild(i).position);
+        }
+
         InitTiles();
     }
 
@@ -70,12 +77,12 @@ public class TileGenerator : MonoBehaviour
     {
         for (int i = 0; i < countInitTiles; i++)
         {
-            SpawnTile();
+            SpawnTile(false);
         }
         targetTile = tiles[0];
     }
 
-    private void SpawnTile()
+    private void SpawnTile(bool withObstacles = true)
     {
         Vector3 newTilePosition = Vector3.zero;
         if (tiles.Count != 0)
@@ -85,7 +92,10 @@ public class TileGenerator : MonoBehaviour
         }
 
         Transform newTile = Instantiate(tilePrefab, newTilePosition, Quaternion.identity, transform);
-        SpawnObstacles(newTile);
+        if (withObstacles)
+        {
+            SpawnObstacles(newTile);
+        }
 
         tiles.Add(newTile);
     }
@@ -94,20 +104,15 @@ public class TileGenerator : MonoBehaviour
     {
         int countObstacles = tile.childCount - 1;
         Vector3 initPosition = tile.position + new Vector3(0f, 0.5f * obstaclePrefab.localScale.y, 0.5f * tileBounds.extents.z);
-
-        var availablePositions = new List<float>(tile.childCount);
-        for (int i = 0; i < tile.childCount; i++)
-        {
-            availablePositions.Add(tile.GetChild(i).position.x);
-        }
+        var availablePositions = new List<Vector3>(childPositions);
 
         for (int i = 0; i < countObstacles; i++)
         {
             int index = Random.Range(0, availablePositions.Count);
-            float randomPosition = availablePositions[index];
+            Vector3 randomPosition = availablePositions[index];
             availablePositions.RemoveAt(index);
 
-            Vector3 actualPosition = initPosition + Vector3.right * randomPosition;
+            Vector3 actualPosition = initPosition + randomPosition;
             Transform obstacle = Instantiate(obstaclePrefab, actualPosition, Quaternion.identity, tile);
         }
     }
