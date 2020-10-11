@@ -1,10 +1,14 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 
-public class DistanceCounter : MonoBehaviour
+using UnityEngine;
+
+public class DistanceDeterminator : MonoBehaviour
 {
-    [SerializeField] private Text currentTraveledDistanceText = default;
-    [SerializeField] private Text highTraveledDistanceText = default;
+    [SerializeField] private TileGenerator tileGenerator = default;
+    [SerializeField] private PlayerHealth playerHealth = default;
+
+    public event Action<string> OnCurrentDistanceChanged = delegate { };
+    public event Action<string> OnHighDistanceChanged = delegate { };
 
     private readonly string highTraveledDistanceKey = "highTraveledDistanceKey";
 
@@ -16,7 +20,7 @@ public class DistanceCounter : MonoBehaviour
         set
         {
             currentTraveledDistance = value;
-            currentTraveledDistanceText.text = FormatDistance(value);
+            OnCurrentDistanceChanged?.Invoke(FormatDistance(currentTraveledDistance));
         }
     }
 
@@ -26,14 +30,19 @@ public class DistanceCounter : MonoBehaviour
         set
         {
             highTraveledDistance = value;
-            highTraveledDistanceText.text = FormatDistance(value);
-            PlayerPrefs.SetFloat(highTraveledDistanceKey, HighTraveledDistance);
+            OnHighDistanceChanged?.Invoke(FormatDistance(highTraveledDistance));
+            PlayerPrefs.SetFloat(highTraveledDistanceKey, highTraveledDistance);
         }
     }
 
     private void Awake()
     {
-        GetComponent<TileGenerator>().OnDistanceTranslate += OnDistanceTranslate;
+        if (tileGenerator != null) tileGenerator.OnDistanceTranslate += OnDistanceTranslate;
+        if (playerHealth != null) playerHealth.OnDie += OnPlayerDie;
+    }
+
+    private void Start()
+    {
         HighTraveledDistance = PlayerPrefs.GetFloat(highTraveledDistanceKey, 0f);
     }
 
@@ -45,6 +54,11 @@ public class DistanceCounter : MonoBehaviour
         {
             HighTraveledDistance = CurrentTraveledDistance;
         }
+    }
+
+    private void OnPlayerDie()
+    {
+        HighTraveledDistance = highTraveledDistance;
     }
 
     private string FormatDistance(float value) => $"{value:F} m";

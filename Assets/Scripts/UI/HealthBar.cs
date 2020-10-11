@@ -11,12 +11,6 @@ public class HealthBar : MonoBehaviour
     {
         targetText = GetComponent<Text>();
         playerHealth.OnHealthChange += OnHealthChange;
-        playerHealth.OnDie += OnDie;
-    }
-
-    private void OnDie()
-    {
-        targetText.text = $"DIE";
     }
 
     private void OnHealthChange(int currentHealth, int maxHealth)
