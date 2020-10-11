@@ -11,17 +11,26 @@ public class PlayerHealth : MonoBehaviour
 
     private int currentHealth;
 
+    private int CurrentHealth
+    {
+        get => currentHealth;
+        set
+        {
+            currentHealth = value;
+            OnHealthChange?.Invoke(currentHealth, maxHealth);
+        }
+    }
+
     private void Awake()
     {
-        currentHealth = maxHealth;
+        CurrentHealth = maxHealth;
     }
 
     public void TakeDamage(int amount)
     {
-        currentHealth -= amount;
-        OnHealthChange?.Invoke(currentHealth, maxHealth);
+        CurrentHealth -= amount;
 
-        if (currentHealth <= 0)
+        if (CurrentHealth <= 0)
         {
             OnDie?.Invoke();
             Destroy(gameObject);
