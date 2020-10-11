@@ -9,7 +9,7 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] private Transform tilePrefab = default;
     [SerializeField] private Transform obstaclePrefab = default;
 
-    private readonly int countInitTiles = 3;
+    private readonly int countInitTiles = 5;
     private readonly float offsetBetweenTiles = 0.25f;
 
     private Rect screenRect;
