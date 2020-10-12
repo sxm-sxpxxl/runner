@@ -39,6 +39,7 @@ public class DistanceDeterminator : MonoBehaviour
     private void OnPlayerDie()
     {
         UpdateHighTraveledDistance(highTraveledDistance);
+        tileMotionController.OnDistanceAdd -= OnDistanceAdd;
     }
 
     private void UpdateHighTraveledDistance(float value)

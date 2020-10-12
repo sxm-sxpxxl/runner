@@ -1,31 +1,51 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using System;
 
+using UnityEngine;
+
+[RequireComponent(typeof(Animator))]
 public class GameController : MonoBehaviour
 {
     [SerializeField] private PlayerHealth playerHealth = default;
-    [SerializeField] private RectTransform gameOverOverlay = default;
+    [SerializeField] private SceneController sceneController = default;
+
+    private readonly int GameOverInTriggerId = Animator.StringToHash("GameOverIn");
+    private readonly int GameOverOutTriggerId = Animator.StringToHash("GameOverOut");
+
+    private Action gameOverInAction = delegate { };
+    private Action gameOverOutAction = delegate { };
+
+    private Animator animator = default;
 
     private void Awake()
     {
+        animator = GetComponent<Animator>();
         playerHealth.OnDie += OnPlayerDie;
     }
 
     private void OnPlayerDie()
     {
-        gameOverOverlay.gameObject.SetActive(true);
-        Time.timeScale = 0f;
+        animator.SetTrigger(GameOverInTriggerId);
     }
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        gameOverOutAction = () => sceneController.ReloadCurrentScene();
+        animator.SetTrigger(GameOverOutTriggerId);
     }
 
     public void BackToMenu()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        gameOverOutAction = () => sceneController.LoadPrevScene();
+        animator.SetTrigger(GameOverOutTriggerId);
+    }
+
+    public void OnGameOverInComplete()
+    {
+        gameOverInAction?.Invoke();
+    }
+
+    public void OnGameOverOutComplete()
+    {
+        gameOverOutAction?.Invoke();
     }
 }
