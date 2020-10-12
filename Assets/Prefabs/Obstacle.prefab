@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8301644094225062385}
   - component: {fileID: 5133663286327874158}
   - component: {fileID: 3502398627376303245}
+  - component: {fileID: -1411645258842640652}
   m_Layer: 0
   m_Name: Obstacle
   m_TagString: Untagged
@@ -123,8 +124,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41e7dc732b29a9240b4ecdc4d10ea280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 5133663286327874158}
   particlePrefab: {fileID: 144057431703944548, guid: ea089ea6b64111544b42a94dbba66007, type: 3}
+--- !u!114 &-1411645258842640652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8301644094225062398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec577e6a8354d34439d0bd33acbb2477, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioPrefab: {fileID: 2873073602929018520, guid: e91e965a8652bf64dba4b9b54327491e, type: 3}
 --- !u!1001 &1603567102252732150
 PrefabInstance:
   m_ObjectHideFlags: 0
