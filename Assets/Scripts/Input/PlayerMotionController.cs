@@ -4,6 +4,7 @@ public class PlayerMotionController : MonoBehaviour
 {
     [SerializeField] private Transform tilePrefab = default;
     [SerializeField, Range(0.25f, 1f)] private float durationMovement = 0.5f;
+    [SerializeField, Range(0f, 360f)] private float rotationSpeed = 180f;
 
     private Bounds tileBounds;
 
@@ -24,6 +25,7 @@ public class PlayerMotionController : MonoBehaviour
     {
         HandleInput();
         UpdateMotion();
+        UpdateAutonomousRotation();
     }
 
     private void OnSwipe(SwipeDirection direction)
@@ -74,5 +76,10 @@ public class PlayerMotionController : MonoBehaviour
             isMovement = false;
             lerpWeight = 0f;
         }
+    }
+
+    private void UpdateAutonomousRotation()
+    {
+        transform.Rotate(Vector3.right * rotationSpeed * Time.deltaTime);
     }
 }
