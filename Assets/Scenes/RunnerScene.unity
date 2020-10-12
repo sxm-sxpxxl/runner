@@ -3032,6 +3032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2029287400042126409, guid: 72f731ac1df189e19901c70e4c8243bf, type: 3}
   durationMovement: 0.25
+  rotationSpeed: 180
 --- !u!114 &1973122577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3059,7 +3060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90d3b45587d652a48b9f3fa1c117a596, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 7
 --- !u!54 &1973122579
 Rigidbody:
   m_ObjectHideFlags: 0
