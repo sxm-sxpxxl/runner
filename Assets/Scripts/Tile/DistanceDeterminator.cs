@@ -9,15 +9,18 @@ public class DistanceDeterminator : MonoBehaviour
 
     public event Action<string> OnCurrentDistanceChanged = delegate { };
     public event Action<string> OnHighDistanceChanged = delegate { };
+    public event Action OnNewHighScoreObtained = delegate { };
 
     private readonly string highTraveledDistanceKey = "highTraveledDistanceKey";
 
     private float currentTraveledDistance, highTraveledDistance;
 
+    private bool isNewHighScoreObtained;
+
     private void Awake()
     {
         if (tileMotionController != null) tileMotionController.OnDistanceAdd += OnDistanceAdd;
-        if (playerHealth != null) playerHealth.OnDie += OnPlayerDie;
+        if (playerHealth != null) playerHealth.Die += OnPlayerDestroy;
     }
 
     private void Start()
@@ -33,10 +36,14 @@ public class DistanceDeterminator : MonoBehaviour
         if (currentTraveledDistance > highTraveledDistance)
         {
             UpdateHighTraveledDistance(currentTraveledDistance);
+            if (isNewHighScoreObtained) return;
+
+            OnNewHighScoreObtained?.Invoke();
+            isNewHighScoreObtained = true;
         }
     }
 
-    private void OnPlayerDie()
+    private void OnPlayerDestroy()
     {
         UpdateHighTraveledDistance(highTraveledDistance);
         tileMotionController.OnDistanceAdd -= OnDistanceAdd;

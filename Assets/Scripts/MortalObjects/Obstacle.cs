@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class Obstacle : MortalObject
 {
     [SerializeField, Min(1)] private int damageAmount = 1;
 
@@ -9,6 +9,7 @@ public class Obstacle : MonoBehaviour
         PlayerHealth player = other.GetComponent<PlayerHealth>();
         player?.TakeDamage(damageAmount);
 
+        OnDie();
         Destroy(gameObject);
     }
 }

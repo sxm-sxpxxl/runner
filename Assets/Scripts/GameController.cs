@@ -19,10 +19,10 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        playerHealth.OnDie += OnPlayerDie;
+        playerHealth.Die += OnPlayerDestroy;
     }
 
-    private void OnPlayerDie()
+    private void OnPlayerDestroy()
     {
         animator.SetTrigger(GameOverInTriggerId);
     }
