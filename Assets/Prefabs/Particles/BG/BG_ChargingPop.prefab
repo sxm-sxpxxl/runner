@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8388259663562513858}
   - component: {fileID: 8388259663562513861}
   m_Layer: 0
-  m_Name: ChargingPop
+  m_Name: BG_ChargingPop
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ ParticleSystem:
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  looping: 0
+  looping: 1
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
