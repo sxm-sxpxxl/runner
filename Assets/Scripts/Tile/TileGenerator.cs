@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -8,9 +9,11 @@ public class TileGenerator : MonoBehaviour
 {
     [SerializeField] private Transform tilePrefab = default;
     [SerializeField] private Transform obstaclePrefab = default;
-
-    private readonly int countInitTiles = 5;
-    private readonly float offsetBetweenTiles = 0.25f;
+    
+    [Space]
+    [SerializeField, Range(1, 20)] private int initialTilesCount = 10;
+    [SerializeField, Range(1, 20)] private int firstObstacleTileOffset = 5;
+    [SerializeField, Range(0.01f, 1f)] private float offsetBetweenTiles = 0.25f;
 
     private Rect screenRect;
     private Bounds tileBounds;
@@ -18,6 +21,14 @@ public class TileGenerator : MonoBehaviour
     private List<Vector3> childPositions = new List<Vector3>();
 
     public List<Transform> Tiles { get; private set; } = new List<Transform>();
+
+    private void OnValidate()
+    {
+        if (firstObstacleTileOffset > initialTilesCount)
+        {
+            firstObstacleTileOffset = initialTilesCount;
+        }
+    }
 
     private void Start()
     {
@@ -65,10 +76,11 @@ public class TileGenerator : MonoBehaviour
 
     private void InitTiles()
     {
-        for (int i = 0; i < countInitTiles; i++)
+        for (int i = 0; i < initialTilesCount; i++)
         {
-            SpawnTile(false);
+            SpawnTile(i > firstObstacleTileOffset);
         }
+        
         targetTile = Tiles[0];
     }
 
