@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMotionController : MonoBehaviour
 {
@@ -18,26 +19,29 @@ public class PlayerMotionController : MonoBehaviour
         lastPosition = nextPosition = transform.position;
         rate = 1f / durationMovement;
         tileBounds = BoundsDeterminator.Determine(tilePrefab);
-        GetComponent<SwipeDetector>().OnSwipe += OnSwipe;
     }
 
     private void Update()
     {
-        HandleInput();
+        UpdateNextPosition();
         UpdateMotion();
         UpdateAutonomousRotation();
     }
 
-    private void OnSwipe(SwipeDirection direction)
+    public void HandleMoveInput(InputAction.CallbackContext context)
     {
-        if (direction == SwipeDirection.Left || direction == SwipeDirection.Right)
+        int direction = (int) Mathf.Clamp(Mathf.Round(context.ReadValue<Vector2>().x), -1f , 1f);
+
+        Mouse mouse = Mouse.current;
+        if (mouse.name == context.control.device.name && mouse.leftButton.isPressed == false)
         {
-            int sign = direction == SwipeDirection.Right ? 1 : -1;
-            inputDirection = Vector3.right * sign;
+            direction = 0;
         }
+
+        inputDirection = Vector3.right * direction;
     }
 
-    private void HandleInput()
+    private void UpdateNextPosition()
     {
         if (inputDirection.sqrMagnitude < 0.01f) return;
 
