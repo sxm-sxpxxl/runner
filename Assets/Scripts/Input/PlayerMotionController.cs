@@ -3,21 +3,25 @@ using UnityEngine.InputSystem;
 
 public class PlayerMotionController : MonoBehaviour
 {
+    private const float FullRotationDegrees = 360f;
+    
     [SerializeField] private Transform tilePrefab = default;
-    [SerializeField, Range(0.25f, 1f)] private float durationMovement = 0.5f;
-    [SerializeField, Range(0f, 360f)] private float rotationSpeed = 180f;
+    [SerializeField, Range(0.1f, 1f)] private float shiftDuration = 0.5f;
+    [SerializeField] private AnimationCurve shiftCurve = default;
+    [Space]
+    [SerializeField] private Transform rotationTarget;
+    [SerializeField, Range(0f, 10f)] private float rotationSpeed = 10f;
 
     private Bounds tileBounds;
 
     private Vector3 inputDirection;
     private Vector3 lastPosition, nextPosition;
-    private bool isMovement;
-    private float lerpWeight, rate;
+    private bool isShifting;
+    private float lerpWeight;
 
     private void Awake()
     {
         lastPosition = nextPosition = transform.position;
-        rate = 1f / durationMovement;
         tileBounds = BoundsDeterminator.Determine(tilePrefab);
     }
 
@@ -45,7 +49,7 @@ public class PlayerMotionController : MonoBehaviour
     {
         if (inputDirection.sqrMagnitude < 0.01f) return;
 
-        if (isMovement)
+        if (isShifting)
         {
             bool isDirectionNotChanged = Vector3.Dot(inputDirection, nextPosition - lastPosition) > 0f;
             if (isDirectionNotChanged) return;
@@ -62,7 +66,7 @@ public class PlayerMotionController : MonoBehaviour
 
             lastPosition = nextPosition;
             nextPosition = newPosition;
-            isMovement = true;
+            isShifting = true;
         }
 
         inputDirection = Vector3.zero;
@@ -70,20 +74,21 @@ public class PlayerMotionController : MonoBehaviour
 
     private void UpdateMotion()
     {
-        if (!isMovement) return;
+        if (!isShifting) return;
 
+        float rate = 1f / shiftDuration;
         lerpWeight += rate * Time.deltaTime;
-        transform.position = Vector3.Slerp(lastPosition, nextPosition, lerpWeight);
+        transform.position = Vector3.Slerp(lastPosition, nextPosition, shiftCurve.Evaluate(lerpWeight));
 
         if (lerpWeight > 1f)
         {
-            isMovement = false;
+            isShifting = false;
             lerpWeight = 0f;
         }
     }
 
     private void UpdateAutonomousRotation()
     {
-        transform.Rotate(Vector3.right * rotationSpeed * Time.deltaTime);
+        rotationTarget.Rotate(FullRotationDegrees * rotationSpeed * Time.deltaTime * Vector3.right);
     }
 }

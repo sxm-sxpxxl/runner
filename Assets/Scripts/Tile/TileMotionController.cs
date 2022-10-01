@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(TileGenerator))]
 public class TileMotionController : MonoBehaviour
 {
-    [SerializeField, Range(0f, 20f)] float speed = 10f;
+    [SerializeField, Range(0f, 50f)] float speed = 20f;
 
     public event Action<float> OnDistanceAdd = delegate { };
 
